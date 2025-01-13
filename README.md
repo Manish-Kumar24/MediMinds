@@ -68,8 +68,8 @@ mediminds/
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/Manish-Kumar24/mediminds.git
-cd mediminds
+git clone https://github.com/Manish-Kumar24/MediMinds.git
+cd MediMinds
 ```
 
 2. **Install dependencies:**
