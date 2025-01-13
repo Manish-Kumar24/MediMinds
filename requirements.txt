@@ -1,0 +1,11 @@
+langchain
+langchain-community
+langchain-core
+langchain-huggingface
+streamlit
+python-dotenv
+faiss-cpu
+sentence-transformers
+PyPDF2
+python-magic
+pypdf
