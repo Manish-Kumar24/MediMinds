@@ -1,7 +1,5 @@
 import os
 import sys
-
-# Add the project root directory to Python path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, project_root)
 
@@ -17,39 +15,23 @@ class VectorStoreInitializer:
     def __init__(self):
         self.data_path = os.path.join(project_root, "data/documents/")
         self.db_path = os.path.join(project_root, "vector_db/")
-        
+
     def load_documents(self):
-        """Load PDF documents from the data directory"""
-        loader = DirectoryLoader(
-            self.data_path, 
-            glob="*.pdf", 
-            loader_cls=PyPDFLoader
-        )
+        loader = DirectoryLoader(self.data_path, glob="*.pdf", loader_cls=PyPDFLoader)
         return loader.load()
 
     def create_text_chunks(self, documents):
-        """Split documents into chunks"""
-        splitter = RecursiveCharacterTextSplitter(
-            chunk_size=500, 
-            chunk_overlap=50
-        )
+        splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         return splitter.split_documents(documents)
 
     def get_embedding_model(self):
-        """Initialize and return the embedding model"""
-        return HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
+        return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
     def initialize_vectorstore(self):
-        """Create and save the FAISS vectorstore"""
         documents = self.load_documents()
         text_chunks = self.create_text_chunks(documents)
         embedding_model = self.get_embedding_model()
-        
-        # Create and save vectorstore
         db = FAISS.from_documents(text_chunks, embedding_model)
-        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         db.save_local(self.db_path)
         print(f"Vectorstore created and saved at {self.db_path}")
 

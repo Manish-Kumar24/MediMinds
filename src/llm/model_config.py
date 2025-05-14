@@ -10,18 +10,19 @@ load_dotenv(find_dotenv())
 class LLMConfig:
     def __init__(self):
         self.hf_token = os.getenv("HF_TOKEN")
-        self.huggingface_repo_id = "mistralai/Mistral-7B-Instruct-v0.3"
+        self.huggingface_repo_id = "HuggingFaceH4/zephyr-7b-beta"
         self.db_path = "vector_db/"
-        
+
     def load_llm(self):
         """Initialize and return the LLM"""
         llm = HuggingFaceEndpoint(
             repo_id=self.huggingface_repo_id,
+            huggingfacehub_api_token=self.hf_token,
+            task="text-generation",  # Zephyr supports text-generation
             temperature=0.5,
-            model_kwargs={
-                "max_length": 512,
-                "token": self.hf_token
-            }
+            max_new_tokens=512,
+            top_p=0.95,
+            do_sample=True
         )
         return llm
 
@@ -29,8 +30,8 @@ class LLMConfig:
         """Return the custom prompt template"""
         template = """
         Use the pieces of information provided in the context to answer user's question.
-        If you dont know the answer, just say that you dont know, dont try to make up an answer. 
-        Dont provide anything out of the given context
+        If you don't know the answer, just say that you don't know, don't try to make up an answer. 
+        Don't provide anything out of the given context.
 
         Context: {context}
         Question: {question}
@@ -45,8 +46,8 @@ class LLMConfig:
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
         return FAISS.load_local(
-            self.db_path, 
-            embedding_model, 
+            self.db_path,
+            embedding_model,
             allow_dangerous_deserialization=True
         )
 
